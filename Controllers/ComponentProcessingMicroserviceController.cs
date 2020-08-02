@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ComponentProcessingMicroservice.Models;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Net.Http;
 
 namespace ComponentProcessingMicroservice.Controllers
 {
@@ -14,34 +18,48 @@ namespace ComponentProcessingMicroservice.Controllers
     {
         // GET: api/ComponentProcessingMicroservice
         [HttpGet]
-        public IEnumerable<string> Get()
+        public int GetProcessRequestObject(ProcessRequest ob)
         {
-            return new string[] { "value1", "value2" };
+           return 0;
         }
 
         // GET: api/ComponentProcessingMicroservice/5
         [HttpGet("ProcessDetail")]
-        public ProcessResponse Get(ProcessRequest)
+        public ProcessRequest GetRequest(ProcessRequest ob)
         {
-            
-        }
 
-        // POST: api/ComponentProcessingMicroservice
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
+            string JsonToString = "";
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(item: new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response = client.GetAsync(requestUri: "" + ob).Result;
 
-        // PUT: api/ComponentProcessingMicroservice/5
-        [HttpPut("CompleteProcessing")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+                if (response.IsSuccessStatusCode)
+                {
+                    JsonToString = response.Content.ReadAsStringAsync().Result;
+                }
+                else
+                    JsonToString = null;
+
+            }
+            List<ProcessRequest> Response = JsonConvert.DeserializeObject<List<ProcessRequest>>(JsonToString);
+            foreach (ProcessRequest item in Response)
+            {
+                item.Name = ob.Name;
+                item.ContactNumber = ob.ContactNumber;
+                item.CreditCradNumber = ob.CreditCradNumber;
+                item.ComponentType = ob.ComponentType;
+                item.ComponentName = ob.ComponentName;
+                item.Quantity = ob.Quantity;
+                item.IsPriorityRequest = ob.IsPriorityRequest;
+            }
+            return ob;
+
         }
+       
+      
     }
 }

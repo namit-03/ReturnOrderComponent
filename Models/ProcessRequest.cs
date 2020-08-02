@@ -14,9 +14,15 @@ namespace ComponentProcessingMicroservice.Models
 
         public int CreditCradNumber{ get; set; }
 
-        public DetailDefectiveComponent DefectiveComponentDetail { get; set; }
+        public string ComponentType { get; set; }
 
-        public string isPriorityRequest { get; set; }
+        public string ComponentName { get; set; }
+
+        public int Quantity { get; set; }
+
+
+
+        public  Boolean IsPriorityRequest{ get; set; }
 
     }
 }
