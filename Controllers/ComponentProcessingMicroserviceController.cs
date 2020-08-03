@@ -45,7 +45,7 @@ namespace ComponentProcessingMicroservice.Controllers
                 CreditCardNumber = RequestObject.CreditCardNumber,
                 ComponentType = RequestObject.ComponentType,
                 ComponentName = RequestObject.ComponentName,
-                Quantity = RequestObject.Quantity,Debug
+                Quantity = RequestObject.Quantity,
                 IsPriorityRequest = RequestObject.IsPriorityRequest
 
             };
