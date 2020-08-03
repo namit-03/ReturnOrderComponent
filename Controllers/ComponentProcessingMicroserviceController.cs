@@ -23,13 +23,7 @@ namespace ComponentProcessingMicroservice.Controllers
         ProcessResponse ResponseObject = new ProcessResponse();
 
         ComponentProcessingMicroserviceController obj = new ComponentProcessingMicroserviceController();
-        // GET: api/ComponentProcessingMicroservice
-        [HttpGet]
-        public int GetProcessRequestObject(ProcessRequest ob)
-        {
-            return 0;
-        }
-
+       
         // GET: api/ComponentProcessingMicroservice/5
         [HttpGet("ProcessDetail")]
         public string GetRequest(string json)
