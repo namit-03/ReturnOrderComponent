@@ -1,4 +1,4 @@
-﻿using ComponentProcessingMicroservice.Models;
+using ComponentProcessingMicroservice.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,20 +8,14 @@ namespace ComponentProcessingMicroservice.Processing
 {
     public class AccessoryWorkflow : IProcessing
     {
-        public int ProcessingCharge( ProcessRequest ob1)
+        public int ProcessingCharge(bool request)
         {
-            int res = 0;
-            res = 300;
-            if (ob1.IsPriorityRequest == true)
+            int res = 300;
+            if (request == true)
             {
-                
-                res = 300 + 200;
+                res += 200;
             }
-            else
-            {
-                res = 300;
-               
-            }
+
             return res;
         }
     }
