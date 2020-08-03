@@ -10,17 +10,17 @@ namespace ComponentProcessingMicroservice.Processing
     {
         public int ProcessingCharge( ProcessRequest ob1)
         {
-           int NumberOfDays = 0;
+            int res = 0;
             res = 300;
             if (ob1.IsPriorityRequest == true)
             {
-                NumberOfDays = 2;
+                
                 res = 300 + 200;
             }
             else
             {
                 res = 300;
-                NumberOfDays =5;
+               
             }
             return res;
         }
