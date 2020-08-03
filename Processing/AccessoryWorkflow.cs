@@ -10,13 +10,7 @@ namespace ComponentProcessingMicroservice.Processing
     {
         public int ProcessingCharge(bool request)
         {
-            int res = 300;
-            if (request == true)
-            {
-                res += 200;
-            }
-
-            return res;
+            return 300;
         }
     }
 }
