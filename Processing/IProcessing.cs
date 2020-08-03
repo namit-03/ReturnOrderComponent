@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +8,7 @@ namespace ComponentProcessingMicroservice.Processing
 {
     public interface IProcessing
     {
-         int ProcessingCharge(ProcessRequest ob1);
+         int ProcessingCharge(bool ob1);
 
     }
 }
