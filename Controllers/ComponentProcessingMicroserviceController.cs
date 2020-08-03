@@ -18,19 +18,16 @@ namespace ComponentProcessingMicroservice.Controllers
     [ApiController]
     public class ComponentProcessingMicroserviceController : ControllerBase
     {
+        readonly int Limit = 50000;
         
         ProcessRequest RequestObject = new ProcessRequest();
 
-        ProcessResponse ResponseObject = new ProcessResponse();
-/*      
+        ProcessResponse ResponseObject = new ProcessResponse();     
        
         // GET: api/ComponentProcessingMicroservice/5
        [HttpGet("ProcessDetail")]
         public string GetRequest(string json)
         {
-            string ComponentType = "";int ComponentQuantity = 0;
-
-            int Processing = 0;
             var RequestObject = JsonConvert.DeserializeObject<ProcessRequest>(json);
 
        RequestObject = new ProcessRequest
@@ -44,9 +41,7 @@ namespace ComponentProcessingMicroservice.Controllers
                 IsPriorityRequest = RequestObject.IsPriorityRequest
 
             };
-            ComponentType = RequestObject.ComponentType;
-            ComponentQuantity = RequestObject.Quantity;
-            Processing = ProcessId();
+            int Processing = ProcessId();
 
 
 
@@ -54,7 +49,7 @@ namespace ComponentProcessingMicroservice.Controllers
             {
                 RequestId = Processing,
                 ProcessingCharge = ProcessingCharge(RequestObject.ComponentType),
-                PackagingAndDeliveryCharge = PackagingDelivery(ComponentType, ComponentQuantity),
+                PackagingAndDeliveryCharge = PackagingDelivery(RequestObject.ComponentType, RequestObject.Quantity),
                 DateOfDelivery = DeliveryDate()
 
             };
@@ -63,16 +58,16 @@ namespace ComponentProcessingMicroservice.Controllers
             return ResponseString;
 
         }
-        private DateTime DeliveryDate()
+        public DateTime DeliveryDate()
         {
             DateTime date = DateTime.Now;
             if (RequestObject.IsPriorityRequest == true)
             {
-                return date.AddDays(2);
+                return date.AddDays(2).Date;
             }
             else
             {
-                return date.AddDays(5);
+                return date.AddDays(5).Date;
             }
         }
         public int PackagingDelivery(string Item, int Count)
@@ -95,13 +90,10 @@ namespace ComponentProcessingMicroservice.Controllers
             return charge;
         }
 
-*/
-
-        [HttpPost]
-        public string CardDetails(CardDetails obj)
+        public string CardDetails(CardDetails details)
         {
             PaymentDetails Response;
-            var data = JsonConvert.SerializeObject(obj);
+            var data = JsonConvert.SerializeObject(details);
             var value = new StringContent(data, Encoding.UTF8, "application/json");
             using (var client = new HttpClient())
             {
@@ -126,7 +118,6 @@ namespace ComponentProcessingMicroservice.Controllers
                 }
             }
         }
-/*
         public int ProcessId()
         {
             int n = 0;
@@ -141,68 +132,42 @@ namespace ComponentProcessingMicroservice.Controllers
             Workflow = RequestObject.ComponentType;
             if (Workflow == "Integral")
             {
-                IntegralWorkflow ob = new IntegralWorkflow();
-                ProcessingCharge= ob.ProcessingCharge(RequestObject);
+                IntegralWorkflow integral = new IntegralWorkflow();
+                ProcessingCharge = integral.ProcessingCharge(RequestObject.IsPriorityRequest);
             }
             else
             {
-                AccessoryWorkflow ob1 = new AccessoryWorkflow();
-                ProcessingCharge=ob1.ProcessingCharge(RequestObject);
+                AccessoryWorkflow accessory = new AccessoryWorkflow();
+                ProcessingCharge = accessory.ProcessingCharge(RequestObject.IsPriorityRequest);
             }
             return ProcessingCharge;
         }
 
-        public string GetMessageUser(Boolean message)
+        [HttpPost]
+        public string GetUserMessage(string message)
         {
-            string FinalMessage = "";
-            string ResponseMessage ="";
-            
-            if (message == true)
+            if (message == "True")
             {
-             var Response=CardDetails();
-                ResponseMessage= Response.Message;
-                if(ResponseMessage!="sucessfull")
+                CardDetails detail = new CardDetails()
                 {
-                    FinalMessage = "Payment Failed";
+                    CreditCardNumber = RequestObject.CreditCardNumber,
+                    CreditLimit = Limit,
+                    ProcessingCharge = ResponseObject.ProcessingCharge + ResponseObject.PackagingAndDeliveryCharge
+                };
+                var result = CardDetails(detail);
+                if(result == "Successful")
+                {
+                    return "Success";
                 }
                 else
                 {
-                    FinalMessage = "Payment Sucessfull";
-                }   
-                
+                    return "Failed";
+                }
             }
-            return FinalMessage;
-        }
-*/
-        public int GetCardLimit(int CardCardNumber)
-        {
-            int CardLimit = 0;
-            Dictionary<long, int> CreditCard = new Dictionary<long, int>();
-            CreditCard.Add(100,500 );
-            CreditCard.Add(101,700);
-            CreditCard.Add(102, 1000);
-            CreditCard.Add(105, 400);
-            foreach (KeyValuePair<long,int> ele1 in CreditCard)
+            else
             {
-                if (ele1.Key == CardCardNumber)
-                {
-                    CardLimit = ele1.Value;
-                }
-                else
-                {
-                    CardLimit = 0;
-                }
-          
+                return "Payment not initiated";
             }
-            return CardLimit;
         }
-
-        /*    
-             public int RecieveResponse()
-        {
-
-C:\Users\Namit Pundir\source\repos\ComponentProcessingMicroservice\Controllers\ComponentProcessingMicroserviceController.cs
-        }  
-        */
     }
 }
