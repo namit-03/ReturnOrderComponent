@@ -61,7 +61,7 @@ namespace ComponentProcessingMicroservice.Controllers
         public DateTime DeliveryDate()
         {
             DateTime date = DateTime.Now;
-            if (RequestObject.IsPriorityRequest == true)
+            if (RequestObject.IsPriorityRequest == true && RequestObject.ComponentType == "Integral")
             {
                 return date.AddDays(2).Date;
             }
@@ -138,7 +138,7 @@ namespace ComponentProcessingMicroservice.Controllers
             else
             {
                 AccessoryWorkflow accessory = new AccessoryWorkflow();
-                ProcessingCharge = accessory.ProcessingCharge(RequestObject.IsPriorityRequest);
+                ProcessingCharge = accessory.ProcessingCharge(false);
             }
             return ProcessingCharge;
         }
