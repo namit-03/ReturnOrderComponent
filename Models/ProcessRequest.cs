@@ -10,9 +10,9 @@ namespace ComponentProcessingMicroservice.Models
     {
          public string Name{ get; set; }
 
-        public int ContactNumber{ get; set; }
+        public string ContactNumber{ get; set; }
 
-        public int CreditCradNumber{ get; set; }
+        public int CreditCardNumber{ get; set; }
 
         public string ComponentType { get; set; }
 

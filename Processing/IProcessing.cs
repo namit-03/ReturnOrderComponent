@@ -8,7 +8,7 @@ namespace ComponentProcessingMicroservice.Processing
 {
     public interface IProcessing
     {
-         int ProcessingCharge(ProcessRequest ob1,ProcessResponse ob2);
+         int ProcessingCharge(ProcessRequest ob1);
 
     }
 }

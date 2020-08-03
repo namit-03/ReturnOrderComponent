@@ -10,9 +10,9 @@ namespace ComponentProcessingMicroservice.Processing
     {
     
 
-        public int ProcessingCharge( ProcessRequest ob1, ProcessResponse ob2)
+        public int ProcessingCharge( ProcessRequest ob1)
         {
-            var res = ob2.ProcessingCharge;int NumberOfDays = 0;
+            int res = 0; int NumberOfDays = 0;
             res = 500;
             if (ob1.IsPriorityRequest == true)
             {
