@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,20 +18,21 @@ namespace ComponentProcessingMicroservice.Controllers
     [ApiController]
     public class ComponentProcessingMicroserviceController : ControllerBase
     {
+        
         ProcessRequest RequestObject = new ProcessRequest();
 
         ProcessResponse ResponseObject = new ProcessResponse();
-
-        ComponentProcessingMicroserviceController obj = new ComponentProcessingMicroserviceController();
+/*      
        
         // GET: api/ComponentProcessingMicroservice/5
-        [HttpGet("ProcessDetail")]
+       [HttpGet("ProcessDetail")]
         public string GetRequest(string json)
         {
             string ComponentType = "";int ComponentQuantity = 0;
 
             int Processing = 0;
             var RequestObject = JsonConvert.DeserializeObject<ProcessRequest>(json);
+
        RequestObject = new ProcessRequest
             {
                 Name = RequestObject.Name,
@@ -46,13 +47,15 @@ namespace ComponentProcessingMicroservice.Controllers
             ComponentType = RequestObject.ComponentType;
             ComponentQuantity = RequestObject.Quantity;
             Processing = ProcessId();
-            DateTime date = DateTime.Now;
+
+
+
             ResponseObject = new ProcessResponse
             {
                 RequestId = Processing,
-                ProcessingCharge =ProcessingCharge(RequestObject.ComponentType),
-                PackagingAndDeliveryCharge = PackagingDelivery(ComponentType,ComponentQuantity),
-                DateOfDelivery = date
+                ProcessingCharge = ProcessingCharge(RequestObject.ComponentType),
+                PackagingAndDeliveryCharge = PackagingDelivery(ComponentType, ComponentQuantity),
+                DateOfDelivery = DeliveryDate()
 
             };
 
@@ -60,17 +63,24 @@ namespace ComponentProcessingMicroservice.Controllers
             return ResponseString;
 
         }
-
-        private int PackagingDelivery(string Item, int Count)
+        private DateTime DeliveryDate()
+        {
+            DateTime date = DateTime.Now;
+            if (RequestObject.IsPriorityRequest == true)
+            {
+                return date.AddDays(2);
+            }
+            else
+            {
+                return date.AddDays(5);
+            }
+        }
+        public int PackagingDelivery(string Item, int Count)
         {
             var PackigingDeliveryCharge = "";
-            UriBuilder builder = new UriBuilder("");
-
-            Item = RequestObject.ComponentType;
-            Count = RequestObject.Quantity;
-            builder.Query = "item=Item&count=Count";
+            var query = "?item="+Item+"&count="+Count;
             HttpClient client = new HttpClient();
-            HttpResponseMessage result = client.GetAsync(builder.Uri).Result;
+            HttpResponseMessage result = client.GetAsync("https://localhost:44348/GetPackagingDeliveryCharge" + query).Result;
 
 
             if (result.IsSuccessStatusCode)
@@ -79,53 +89,43 @@ namespace ComponentProcessingMicroservice.Controllers
             }
             else
             {
-                PackigingDeliveryCharge = "";
+                PackigingDeliveryCharge = "0";
             }
             int charge = int.Parse(PackigingDeliveryCharge);
             return charge;
         }
 
+*/
 
-
-        [HttpPost("CardDetails")]
-        private PaymentDetails CardDetails()
+        [HttpPost]
+        private string CardDetails(CardDetails obj)
         {
-            var CardDetails = "";
-            int CardLimit = 0; 
             PaymentDetails Response;
-
-            CardLimit = GetCardLimit(RequestObject.CreditCardNumber);
-            CardDetails obj = new CardDetails
-            {
-                CreditCardNumber = RequestObject.CreditCardNumber,
-                CreditLimit = CardLimit,
-                ProcessingCharge = ResponseObject.ProcessingCharge
-
-            };
-
-
-
-
             var data = JsonConvert.SerializeObject(obj);
             var value = new StringContent(data, Encoding.UTF8, "application/json");
             using (var client = new HttpClient())
             {
-              var  response = client.PostAsync("", value).Result;
+              var response = client.PostAsync("", value).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
                     Response = JsonConvert.DeserializeObject<PaymentDetails>(CardDetails);
-
-
+                    if(Response.Message == "Successful")
+                    {
+                        return "Successful";
+                    }
+                    else
+                    {
+                        return "Failed";
+                    }
                 }
                 else
                 {
-                    Response = null;
+                    return "Failed";
                 }
-                return Response;
             }
         }
-
+/*
         public int ProcessId()
         {
             int n = 0;
@@ -138,7 +138,7 @@ namespace ComponentProcessingMicroservice.Controllers
         {
             int ProcessingCharge = 0;
             Workflow = RequestObject.ComponentType;
-            if (Workflow == "IntegralWorkflow")
+            if (Workflow == "Integral")
             {
                 IntegralWorkflow ob = new IntegralWorkflow();
                 ProcessingCharge= ob.ProcessingCharge(RequestObject);
@@ -172,6 +172,7 @@ namespace ComponentProcessingMicroservice.Controllers
             }
             return FinalMessage;
         }
+*/
         public int GetCardLimit(int CardCardNumber)
         {
             int CardLimit = 0;
@@ -195,10 +196,12 @@ namespace ComponentProcessingMicroservice.Controllers
             return CardLimit;
         }
 
-        /*     public int RecieveResponse()
+        /*    
+             public int RecieveResponse()
         {
 
 C:\Users\Namit Pundir\source\repos\ComponentProcessingMicroservice\Controllers\ComponentProcessingMicroserviceController.cs
-        }  */
+        }  
+        */
     }
 }
