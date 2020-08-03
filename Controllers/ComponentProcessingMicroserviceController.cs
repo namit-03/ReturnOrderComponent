@@ -98,18 +98,19 @@ namespace ComponentProcessingMicroservice.Controllers
 */
 
         [HttpPost]
-        private string CardDetails(CardDetails obj)
+        public string CardDetails(CardDetails obj)
         {
             PaymentDetails Response;
             var data = JsonConvert.SerializeObject(obj);
             var value = new StringContent(data, Encoding.UTF8, "application/json");
             using (var client = new HttpClient())
             {
-              var response = client.PostAsync("", value).Result;
+              var response = client.PostAsync("https://localhost:44360/api/ProcessPayment", value).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
-                    Response = JsonConvert.DeserializeObject<PaymentDetails>(CardDetails);
+                    var result = response.Content.ReadAsStringAsync().Result;
+                    Response = JsonConvert.DeserializeObject<PaymentDetails>(result);
                     if(Response.Message == "Successful")
                     {
                         return "Successful";
