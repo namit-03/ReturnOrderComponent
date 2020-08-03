@@ -57,7 +57,7 @@ namespace ComponentProcessingMicroservice.Controllers
             {
                 RequestId = Processing,
                 ProcessingCharge =ProcessingCharge(RequestObject.ComponentType),
-                PackagingAndDeliveryCharge = SendResonse(ComponentType,ComponentQuantity),
+                PackagingAndDeliveryCharge = PackagingDelivery(ComponentType,ComponentQuantity),
                 DateOfDelivery = date
 
             };
@@ -67,12 +67,14 @@ namespace ComponentProcessingMicroservice.Controllers
 
         }
 
-        private int SendResonse(string item, int count)
+        private int PackagingDelivery(string Item, int Count)
         {
             var PackigingDeliveryCharge = "";
             UriBuilder builder = new UriBuilder("");
 
-            builder.Query = "item='Integral'&count='3'";
+            Item = RequestObject.ComponentType;
+            Count = RequestObject.Quantity;
+            builder.Query = "item=Item&count=Count";
             HttpClient client = new HttpClient();
             HttpResponseMessage result = client.GetAsync(builder.Uri).Result;
 
@@ -92,17 +94,18 @@ namespace ComponentProcessingMicroservice.Controllers
 
 
         [HttpPost("CardDetails")]
-        private PaymentDetails CardDetails(CardDetails ob)
+        private PaymentDetails CardDetails()
         {
             var CardDetails = "";
+            int CardLimit = 0; 
             PaymentDetails Response;
-      
 
+            CardLimit = GetCardLimit(RequestObject.CreditCardNumber);
             CardDetails obj = new CardDetails
             {
-                CreditCardNumber = 1234,
-                CreditLimit = 500,
-                ProcessingCharge = 100
+                CreditCardNumber = RequestObject.CreditCardNumber,
+                CreditLimit = CardLimit,
+                ProcessingCharge = ResponseObject.ProcessingCharge
 
             };
 
@@ -140,6 +143,7 @@ namespace ComponentProcessingMicroservice.Controllers
         public int ProcessingCharge(string Workflow)
         {
             int ProcessingCharge = 0;
+            Workflow = RequestObject.ComponentType;
             if (Workflow == "IntegralWorkflow")
             {
                 IntegralWorkflow ob = new IntegralWorkflow();
@@ -153,6 +157,49 @@ namespace ComponentProcessingMicroservice.Controllers
             return ProcessingCharge;
         }
 
+        public string GetMessageUser(Boolean message)
+        {
+            string FinalMessage = "";
+            string ResponseMessage ="";
+            
+            if (message == true)
+            {
+             var Response=CardDetails();
+                ResponseMessage= Response.Message;
+                if(ResponseMessage!="sucessfull")
+                {
+                    FinalMessage = "Payment Failed";
+                }
+                else
+                {
+                    FinalMessage = "Payment Sucessfull";
+                }   
+                
+            }
+            return FinalMessage;
+        }
+        public int GetCardLimit(int CardCardNumber)
+        {
+            int CardLimit = 0;
+            Dictionary<long, int> CreditCard = new Dictionary<long, int>();
+            CreditCard.Add(100,500 );
+            CreditCard.Add(101,700);
+            CreditCard.Add(102, 1000);
+            CreditCard.Add(105, 400);
+            foreach (KeyValuePair<long,int> ele1 in CreditCard)
+            {
+                if (ele1.Key == CardCardNumber)
+                {
+                    CardLimit = ele1.Value;
+                }
+                else
+                {
+                    CardLimit = 0;
+                }
+          
+            }
+            return CardLimit;
+        }
 
         /*     public int RecieveResponse()
         {
