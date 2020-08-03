@@ -1,4 +1,4 @@
-﻿using ComponentProcessingMicroservice.Models;
+using ComponentProcessingMicroservice.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,20 +10,15 @@ namespace ComponentProcessingMicroservice.Processing
     {
     
 
-        public int ProcessingCharge( ProcessRequest ob1)
+        public int ProcessingCharge(bool request)
         {
-            int res = 0; 
-            res = 500;
-            if (ob1.IsPriorityRequest == true)
+            int res = 500;
+            if (request == true)
             {
                 
-                res = 500 + 200;
+                res += 200;
             }
-            else
-            {
-                res = 500;
-                
-            }
+
             return res;
         }
     }
