@@ -12,7 +12,7 @@ namespace ComponentProcessingMicroservice.Models
 
         public string ContactNumber{ get; set; }
 
-        public int CreditCardNumber{ get; set; }
+        public long CreditCardNumber{ get; set; }
 
         public string ComponentType { get; set; }
 
