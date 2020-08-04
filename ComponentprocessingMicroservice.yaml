@@ -14,11 +14,11 @@ spec:
     spec:
       containers:
       - name: componentprocessingmicroservice
-        image: truyumrn.azurecr.io/menurepos:latest
+        image: componentrn.azurecr.io/componentrepos:latest
         ports:
         - containerPort: 8080
       imagePullSecrets:
-      - name: menusn
+      - name: componentsn
 
 ---
 apiVersion: v1

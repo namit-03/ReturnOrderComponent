@@ -19,47 +19,15 @@ namespace ComponentProcessingMicroservice.Controllers
     [ApiController]
     public class ComponentProcessingMicroserviceController : ControllerBase
     {
+        static readonly log4net.ILog _log4net = log4net.LogManager.GetLogger(typeof(ComponentProcessingMicroserviceController));
+
         readonly int Limit = 50000;
 
         public static ProcessRequest RequestObject = new ProcessRequest();
 
         public static ProcessResponse ResponseObject = new ProcessResponse();
 
-        // GET: api/ComponentProcessingMicroservice/5
-        [HttpGet]
-        public string GetRequest(string json)
-        {
-            RequestObject = JsonConvert.DeserializeObject<ProcessRequest>(json);
-
-            RequestObject = new ProcessRequest
-            {
-                Name = RequestObject.Name,
-                ContactNumber = RequestObject.ContactNumber,
-                CreditCardNumber = RequestObject.CreditCardNumber,
-                ComponentType = RequestObject.ComponentType,
-                ComponentName = RequestObject.ComponentName,
-                Quantity = RequestObject.Quantity,
-                IsPriorityRequest = RequestObject.IsPriorityRequest
-
-            };
-            int Processing = ProcessId();
-
-
-
-            ResponseObject = new ProcessResponse
-            {
-                RequestId = Processing,
-                ProcessingCharge = ProcessingCharge(RequestObject.ComponentType),
-                PackagingAndDeliveryCharge = PackagingDelivery(RequestObject.ComponentType, RequestObject.Quantity),
-                DateOfDelivery = DeliveryDate()
-
-            };
-
-            var ResponseString = JsonConvert.SerializeObject(ResponseObject);
-            return ResponseString;
-
-        }
-        public DateTime DeliveryDate()
+         public DateTime DeliveryDate()
         {
             DateTime date = DateTime.Now;
             if (RequestObject.IsPriorityRequest == true && RequestObject.ComponentType == "Integral")
@@ -144,10 +112,48 @@ namespace ComponentProcessingMicroservice.Controllers
             return ProcessingCharge;
         }
 
-        // [HttpGet("{message}")]
+        // GET: api/ComponentProcessingMicroservice/obj
+        [HttpGet]
+        public string GetRequest(string json)
+        {
+            
+            _log4net.Info("GetRequest() called with json input");
+            RequestObject = JsonConvert.DeserializeObject<ProcessRequest>(json);
+
+            RequestObject = new ProcessRequest
+            {
+                Name = RequestObject.Name,
+                ContactNumber = RequestObject.ContactNumber,
+                CreditCardNumber = RequestObject.CreditCardNumber,
+                ComponentType = RequestObject.ComponentType,
+                ComponentName = RequestObject.ComponentName,
+                Quantity = RequestObject.Quantity,
+                IsPriorityRequest = RequestObject.IsPriorityRequest
+
+            };
+            int Processing = ProcessId();
+
+
+
+            ResponseObject = new ProcessResponse
+            {
+                RequestId = Processing,
+                ProcessingCharge = ProcessingCharge(RequestObject.ComponentType),
+                PackagingAndDeliveryCharge = PackagingDelivery(RequestObject.ComponentType, RequestObject.Quantity),
+                DateOfDelivery = DeliveryDate()
+
+            };
+
+            var ResponseString = JsonConvert.SerializeObject(ResponseObject);
+            return ResponseString;
+
+        }
+
+        // [HttpPost("{message}")]
         [HttpPost]
         public string GetUserMessage(Submission message)
         {
+            _log4net.Info("GetUserMessage() called with user message as input");
             if (message.Result == "True")
             {
                 CardDetails detail = new CardDetails()
@@ -170,6 +176,6 @@ namespace ComponentProcessingMicroservice.Controllers
             {
                 return "Payment not initiated";
             }
-        }
+        } 
     }
 }
