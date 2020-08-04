@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,7 +14,8 @@ namespace ComponentProcessingMicroservice.Models
 
         public int PackagingAndDeliveryCharge { get; set; }
 
-        public DateTime DateOfDelivery { get; set; }
+        
+        public DateTime? DateOfDelivery { get; set; }
 
 
 

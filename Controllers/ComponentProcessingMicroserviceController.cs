@@ -64,11 +64,11 @@ namespace ComponentProcessingMicroservice.Controllers
             DateTime date = DateTime.Now;
             if (RequestObject.IsPriorityRequest == true && RequestObject.ComponentType == "Integral")
             {
-                return date.AddDays(2).Date;
+                return date.AddDays(2);
             }
             else
             {
-                return date.AddDays(5).Date;
+                return date.AddDays(5);
             }
         }
         public int PackagingDelivery(string Item, int Count)
