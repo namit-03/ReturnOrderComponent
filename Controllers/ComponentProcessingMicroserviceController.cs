@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Text;
 using ComponentProcessingMicroservice.Processing;
+using ReturnOrderPortal.Models;
 
 namespace ComponentProcessingMicroservice.Controllers
 {
@@ -19,18 +20,18 @@ namespace ComponentProcessingMicroservice.Controllers
     public class ComponentProcessingMicroserviceController : ControllerBase
     {
         readonly int Limit = 50000;
-        
-        ProcessRequest RequestObject = new ProcessRequest();
 
-        ProcessResponse ResponseObject = new ProcessResponse();     
-       
+        public static ProcessRequest RequestObject = new ProcessRequest();
+
+        public static ProcessResponse ResponseObject = new ProcessResponse();
+
         // GET: api/ComponentProcessingMicroservice/5
-       [HttpGet("ProcessDetail")]
+        [HttpGet]
         public string GetRequest(string json)
         {
-            var RequestObject = JsonConvert.DeserializeObject<ProcessRequest>(json);
+            RequestObject = JsonConvert.DeserializeObject<ProcessRequest>(json);
 
-       RequestObject = new ProcessRequest
+            RequestObject = new ProcessRequest
             {
                 Name = RequestObject.Name,
                 ContactNumber = RequestObject.ContactNumber,
@@ -54,26 +55,26 @@ namespace ComponentProcessingMicroservice.Controllers
 
             };
 
-         string ResponseString= JsonConvert.SerializeObject(ResponseObject);
+            var ResponseString = JsonConvert.SerializeObject(ResponseObject);
             return ResponseString;
 
         }
         public DateTime DeliveryDate()
         {
             DateTime date = DateTime.Now;
-            if (RequestObject.IsPriorityRequest == true && RequestObject.ComponentType == "Integral")
+            if (RequestObject.IsPriorityRequest == true)
             {
-                return date.AddDays(2).Date;
+                return date.AddDays(2);
             }
             else
             {
-                return date.AddDays(5).Date;
+                return date.AddDays(5);
             }
         }
         public int PackagingDelivery(string Item, int Count)
         {
             var PackigingDeliveryCharge = "";
-            var query = "?item="+Item+"&count="+Count;
+            var query = "?item=" + Item + "&count=" + Count;
             HttpClient client = new HttpClient();
             HttpResponseMessage result = client.GetAsync("https://localhost:44348/GetPackagingDeliveryCharge" + query).Result;
 
@@ -97,13 +98,13 @@ namespace ComponentProcessingMicroservice.Controllers
             var value = new StringContent(data, Encoding.UTF8, "application/json");
             using (var client = new HttpClient())
             {
-              var response = client.PostAsync("https://localhost:44360/api/ProcessPayment", value).Result;
+                var response = client.PostAsync("https://localhost:44360/api/ProcessPayment", value).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
                     var result = response.Content.ReadAsStringAsync().Result;
                     Response = JsonConvert.DeserializeObject<PaymentDetails>(result);
-                    if(Response.Message == "Successful")
+                    if (Response.Message == "Successful")
                     {
                         return "Successful";
                     }
@@ -122,7 +123,7 @@ namespace ComponentProcessingMicroservice.Controllers
         {
             int n = 0;
             Random _random = new Random();
-            n = _random.Next(500,1000);
+            n = _random.Next(500, 1000);
             return n;
         }
 
@@ -138,15 +139,16 @@ namespace ComponentProcessingMicroservice.Controllers
             else
             {
                 AccessoryWorkflow accessory = new AccessoryWorkflow();
-                ProcessingCharge = accessory.ProcessingCharge(false);
+                ProcessingCharge = accessory.ProcessingCharge(RequestObject.IsPriorityRequest);
             }
             return ProcessingCharge;
         }
 
+        // [HttpGet("{message}")]
         [HttpPost]
-        public string GetUserMessage(string message)
+        public string GetUserMessage(Submission message)
         {
-            if (message == "True")
+            if (message.Result == "True")
             {
                 CardDetails detail = new CardDetails()
                 {
@@ -155,7 +157,7 @@ namespace ComponentProcessingMicroservice.Controllers
                     ProcessingCharge = ResponseObject.ProcessingCharge + ResponseObject.PackagingAndDeliveryCharge
                 };
                 var result = CardDetails(detail);
-                if(result == "Successful")
+                if (result == "Successful")
                 {
                     return "Success";
                 }
