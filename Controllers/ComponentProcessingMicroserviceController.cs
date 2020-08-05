@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Text;
 using ComponentProcessingMicroservice.Processing;
 using ReturnOrderPortal.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ComponentProcessingMicroservice.Controllers
 {
@@ -114,6 +115,7 @@ namespace ComponentProcessingMicroservice.Controllers
 
         // GET: api/ComponentProcessingMicroservice/obj
         [HttpGet]
+        
         public string GetRequest(string json)
         {
             
@@ -131,13 +133,13 @@ namespace ComponentProcessingMicroservice.Controllers
                 IsPriorityRequest = RequestObject.IsPriorityRequest
 
             };
-            int Processing = ProcessId();
+            //int Processing = ProcessId();
 
 
 
             ResponseObject = new ProcessResponse
             {
-                RequestId = Processing,
+              //  RequestId = Processing,
                 ProcessingCharge = ProcessingCharge(RequestObject.ComponentType),
                 PackagingAndDeliveryCharge = PackagingDelivery(RequestObject.ComponentType, RequestObject.Quantity),
                 DateOfDelivery = DeliveryDate()

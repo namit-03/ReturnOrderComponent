@@ -8,6 +8,7 @@ namespace ComponentProcessingMicroservice.Models
 {
     public class ProcessResponse
     {
+        [Key]
         public int RequestId { get; set; }
 
         public int ProcessingCharge { get; set; }
