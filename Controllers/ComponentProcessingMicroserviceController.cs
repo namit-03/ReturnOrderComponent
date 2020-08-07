@@ -13,6 +13,7 @@ using System.Text;
 using ComponentProcessingMicroservice.Processing;
 using ReturnOrderPortal.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 
 namespace ComponentProcessingMicroservice.Controllers
 {
@@ -28,7 +29,13 @@ namespace ComponentProcessingMicroservice.Controllers
 
         public static ProcessResponse ResponseObject = new ProcessResponse();
 
-         public DateTime DeliveryDate()
+        private IConfiguration _config;
+        public ComponentProcessingMicroserviceController( IConfiguration config)
+        {
+            
+            _config = config;
+        }
+        public DateTime DeliveryDate()
         {
             DateTime date = DateTime.Now;
             if (RequestObject.IsPriorityRequest == true && RequestObject.ComponentType == "Integral")
@@ -45,8 +52,8 @@ namespace ComponentProcessingMicroservice.Controllers
             var PackigingDeliveryCharge = "";
             var query = "?item=" + Item + "&count=" + Count;
             HttpClient client = new HttpClient();
-            HttpResponseMessage result = client.GetAsync("https://localhost:44348/GetPackagingDeliveryCharge" + query).Result;
-
+            HttpResponseMessage result = client.GetAsync(_config["Links:PackagingAndDeliveryMicroService"] +"/GetPackagingDeliveryCharge" + query).Result;
+            
 
             if (result.IsSuccessStatusCode)
             {
@@ -67,8 +74,8 @@ namespace ComponentProcessingMicroservice.Controllers
             var value = new StringContent(data, Encoding.UTF8, "application/json");
             using (var client = new HttpClient())
             {
-                var response = client.PostAsync("https://localhost:44360/api/ProcessPayment", value).Result;
-
+                var response = client.PostAsync(_config["Links:PaymentMicroService"] +"/ProcessPayment", value).Result;
+                
                 if (response.IsSuccessStatusCode)
                 {
                     var result = response.Content.ReadAsStringAsync().Result;
