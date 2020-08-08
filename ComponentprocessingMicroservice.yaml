@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: componentprocessingmicroservice
-        image: returnorder.azurecr.io/componentmicroservice:latest
+        image: returnorderimages.azurecr.io/componentrepos:latest
         ports:
         - containerPort: 8080
       imagePullSecrets:
